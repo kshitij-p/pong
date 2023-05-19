@@ -79,21 +79,13 @@ public class GameWindow extends JFrame implements Runnable {
 
     public void run() {
         //
-        int counter = 0;
         double prevTime = 0.0;
-        while (counter < 100000) {
+        while (true) {
             double time = Time.getTime();
             double deltaTime = time - prevTime;
             prevTime = time;
 
             update(deltaTime);
-
-            try {
-                Thread.sleep(16);
-            } catch (Exception e) {
-
-            }
-            counter++;
         }
     }
 }
