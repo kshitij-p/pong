@@ -4,18 +4,27 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
 
+import pong.Ball.Ball;
 import pong.Player.Player;
 import pong.Player.PlayerController;
+import pong.Player.PlayerControls;
 
 public class GameWindow extends JFrame implements Runnable {
 
     Graphics2D g2;
     KbListener keyListener;
+
     Player player1;
+    PlayerControls player1Controls;
+
     Player player2;
+    PlayerControls player2Controls;
+
+    Ball ball;
 
     public GameWindow() {
         this.setSize(GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
@@ -29,7 +38,16 @@ public class GameWindow extends JFrame implements Runnable {
         this.g2 = (Graphics2D) this.getGraphics();
         this.keyListener = new KbListener();
 
-        player1 = new Player(100, 100, Color.BLUE, new PlayerController(keyListener));
+        this.player1Controls = new PlayerControls();
+        this.player1 = new Player(GlobalConstants.PLAYER_WIDTH + 20, 100, Color.BLUE,
+                new PlayerController(keyListener, player1Controls));
+
+        this.player2Controls = new PlayerControls(KeyEvent.VK_W, KeyEvent.VK_S);
+        this.player2 = new Player(GlobalConstants.WINDOW_WIDTH - GlobalConstants.PLAYER_WIDTH - 20, 100, Color.RED,
+                new PlayerController(keyListener, player2Controls));
+
+        this.ball = new Ball((GlobalConstants.WINDOW_WIDTH / 2) + (GlobalConstants.BALL_WIDTH / 2),
+                (GlobalConstants.WINDOW_HEIGHT / 2) + (GlobalConstants.BALL_HEIGHT / 2), player1, player2);
 
         this.addKeyListener(keyListener);
     }
@@ -42,6 +60,8 @@ public class GameWindow extends JFrame implements Runnable {
         g2.drawImage(dbImage, 0, 0, this);
 
         player1.update(deltaTime);
+        player2.update(deltaTime);
+        ball.update(deltaTime);
 
     }
 
@@ -52,6 +72,9 @@ public class GameWindow extends JFrame implements Runnable {
         g2.fillRect(0, 0, GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
 
         player1.draw(g2);
+        player2.draw(g2);
+
+        ball.draw(g2);
     }
 
     public void run() {

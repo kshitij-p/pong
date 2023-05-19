@@ -11,5 +11,10 @@ public class GlobalConstants {
 
     public static Insets INSETS;
 
+    public static final double PLAYER_WIDTH = 20;
+    public static final double PLAYER_HEIGHT = 80;
     public static final double PLAYER_SPEED = 200;
+
+    public static final double BALL_HEIGHT = 10;
+    public static final double BALL_WIDTH = 10;
 }

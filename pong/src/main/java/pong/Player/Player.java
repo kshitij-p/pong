@@ -4,11 +4,13 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
+import pong.GlobalConstants;
+
 public class Player {
 
     private double x, y;
-    private double width = 20;
-    private double height = 80;
+    private double width = GlobalConstants.PLAYER_WIDTH;
+    private double height = GlobalConstants.PLAYER_HEIGHT;
     private Color color;
     private PlayerController controller;
 

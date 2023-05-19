@@ -1,7 +1,5 @@
 package pong.Player;
 
-import java.awt.event.KeyEvent;
-
 import pong.GlobalConstants;
 import pong.KbListener;
 import pong.util.util;
@@ -9,9 +7,16 @@ import pong.util.util;
 public class PlayerController {
     private Player player;
     private KbListener kbListener;
+    private PlayerControls playerControls;
 
     public PlayerController(KbListener kbListener) {
         this.kbListener = kbListener;
+        this.playerControls = new PlayerControls();
+    }
+
+    public PlayerController(KbListener kbListener, PlayerControls playerControls) {
+        this.kbListener = kbListener;
+        this.playerControls = playerControls;
     }
 
     public Player getPlayer() {
@@ -23,13 +28,13 @@ public class PlayerController {
     }
 
     public void update(double deltaTime) {
-        if (kbListener.isPressed(KeyEvent.VK_DOWN)) {
+        if (kbListener.isPressed(playerControls.moveDownKey)) {
             double newY = player.getY() + GlobalConstants.PLAYER_SPEED * deltaTime;
 
             if (newY > (util.getScreenBottom() - player.getHeight()))
                 return;
             player.setY(newY);
-        } else if (kbListener.isPressed(KeyEvent.VK_UP)) {
+        } else if (kbListener.isPressed(playerControls.moveUpKey)) {
             double newY = player.getY() - (GlobalConstants.PLAYER_SPEED * deltaTime);
 
             if (newY > util.getScreenTop()) {
