@@ -17,4 +17,7 @@ public class GlobalConstants {
 
     public static final double BALL_HEIGHT = 10;
     public static final double BALL_WIDTH = 10;
+    public static final double BALL_SPEED = 250;
+
+    public static final double BALL_MAX_ANGLE = 45.0;
 }

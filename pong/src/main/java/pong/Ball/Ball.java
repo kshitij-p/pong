@@ -6,6 +6,7 @@ import java.awt.geom.Rectangle2D;
 
 import pong.GlobalConstants;
 import pong.Player.Player;
+import pong.util.Coord;
 import pong.util.util;
 
 public class Ball {
@@ -13,8 +14,8 @@ public class Ball {
     private double x;
     private double y;
 
-    private double velX = 50;
-    private double velY = 250;
+    private double velX = -150;
+    private double velY = 10;
 
     private double width = GlobalConstants.BALL_WIDTH;
     private double height = GlobalConstants.BALL_HEIGHT;
@@ -32,6 +33,34 @@ public class Ball {
         this.player2 = player2;
     }
 
+    public Coord getVelAfterBounce(Player player) {
+        // Calculates how much to shift the ball by based on how close to the center it
+        // hits.
+
+        double playerCenter = player.getY() + (player.getHeight() / 2.0);
+        double ballCenter = y + (height / 2.0);
+
+        // Calculates how close to the center the ball is on a scale of -1 to 1 (to get
+        // it on -1 to 1 scale we divide by player.height / 2)
+        double normalisedDiff = (playerCenter - ballCenter) / (player.getHeight() /
+                2.0);
+        double thetaAngle = Math.toRadians(normalisedDiff * GlobalConstants.BALL_MAX_ANGLE);
+
+        // Modifier between 0.75 to 1 based on whether ball hits the edge or not. If
+        // ball hits center, 0.75 and if edge, 1.0
+        double speedAngleModifier = Math.min(Math.max(0.75, Math.abs(normalisedDiff)), 1.0);
+
+        double finalSpeed = GlobalConstants.BALL_SPEED * speedAngleModifier;
+
+        // Use trignometry to calc new velX and velY
+        double newVelx = Math.abs(Math.cos(thetaAngle) * finalSpeed);
+        double newVely = (-Math.sin(thetaAngle)) * finalSpeed;
+
+        newVelx = newVelx * (Math.signum(velX) * -1.0);
+
+        return new Coord(newVelx, newVely);
+    }
+
     public void draw(Graphics2D g2) {
         g2.setColor(color);
         g2.fill(new Rectangle2D.Double(x, y, width, height));
@@ -47,11 +76,17 @@ public class Ball {
             double playerTopOffset = player1.getY();
             double playerBotOffset = player1.getY() + player1.getHeight();
 
+            double ballBot = y + height;
+
             // Check if ball collides with player1
-            if (x >= playerLeftOffset && x <= playerRightOffset && y >= playerTopOffset
+            if (x >= playerLeftOffset && x <= playerRightOffset && ballBot >= playerTopOffset
                     && y <= playerBotOffset) {
-                velX *= -1;
-                velY *= -1;
+
+                Coord newVels = getVelAfterBounce(player1);
+
+                velX = newVels.x;
+                velY = newVels.y;
+
             } else if (x < playerLeftOffset) {
                 System.out.println("player1 lost a point");
             }
@@ -65,11 +100,15 @@ public class Ball {
 
             double ballRight = x + width;
 
+            double ballBot = y + height;
+
             // Check if ball collides with player2 i.e. right side
-            if (ballRight >= playerLeftOffset && ballRight <= playerRightOffset && y >= playerTopOffset
+            if (ballRight >= playerLeftOffset && ballRight <= playerRightOffset && ballBot >= playerTopOffset
                     && y <= playerBotOffset) {
-                velX *= -1;
-                velY *= -1;
+                Coord newVels = getVelAfterBounce(player2);
+
+                velX = newVels.x;
+                velY = newVels.y;
             } else if (x > playerLeftOffset) {
                 System.out.println("player2 lost a point");
             }
@@ -80,13 +119,11 @@ public class Ball {
         if (velY < 0) {
             double ballTop = y;
             if (ballTop <= util.getScreenTop()) {
-                velX *= -1;
                 velY *= -1;
             }
         } else {
             double ballBot = y + height;
             if (ballBot >= util.getScreenBottom()) {
-                velX *= -1;
                 velY *= -1;
             }
         }
