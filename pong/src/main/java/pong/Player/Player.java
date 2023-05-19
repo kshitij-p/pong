@@ -14,12 +14,18 @@ public class Player {
     private Color color;
     private PlayerController controller;
 
+    private double initX; // Used to reset pos
+    private double initY; // Used to reset pos
+
     public Player(double x, double y, Color color, PlayerController controller) {
         this.x = x;
         this.y = y;
         this.color = color;
         this.controller = controller;
         this.controller.setPlayer(this);
+
+        this.initX = x;
+        this.initY = y;
     }
 
     public double getX() {
@@ -77,6 +83,11 @@ public class Player {
 
     public void setHeight(double height) {
         this.height = height;
+    }
+
+    public void reset() {
+        this.x = this.initX;
+        this.y = this.initY;
     }
 
     public void draw(Graphics2D g2) {

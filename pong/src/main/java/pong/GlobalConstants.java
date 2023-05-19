@@ -15,9 +15,17 @@ public class GlobalConstants {
     public static final double PLAYER_HEIGHT = 80;
     public static final double PLAYER_SPEED = 200;
 
+    public static final double BALL_INIT_VELX = -150;
+    public static final double BALL_INIT_VELY = 10;
+
     public static final double BALL_HEIGHT = 10;
     public static final double BALL_WIDTH = 10;
     public static final double BALL_SPEED = 250;
-
     public static final double BALL_MAX_ANGLE = 45.0;
+
+    // Distance past the player the ball has to travel to count as a goal - to
+    // smoothen point scoring
+    public static final double GOAL_PADDING = 25;
+
+    public static int SCORE_TO_WIN = 1;
 }

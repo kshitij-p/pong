@@ -12,6 +12,7 @@ import pong.Ball.Ball;
 import pong.Player.Player;
 import pong.Player.PlayerController;
 import pong.Player.PlayerControls;
+import pong.util.PLAYER_ENUM;
 
 public class GameWindow extends JFrame implements Runnable {
 
@@ -24,6 +25,11 @@ public class GameWindow extends JFrame implements Runnable {
     Player player2;
     PlayerControls player2Controls;
 
+    Text player1ScoreText;
+    Text player2ScoreText;
+
+    MultiLineText gameOverText;
+
     Ball ball;
 
     public GameWindow() {
@@ -35,19 +41,35 @@ public class GameWindow extends JFrame implements Runnable {
 
         GlobalConstants.INSETS = this.getInsets();
 
+        double screenCenterX = (GlobalConstants.WINDOW_WIDTH / 2);
+        double screenCenterY = (GlobalConstants.WINDOW_HEIGHT / 2);
+
+        double playerInitPosY = screenCenterY - (GlobalConstants.PLAYER_HEIGHT / 2);
+
         this.g2 = (Graphics2D) this.getGraphics();
         this.keyListener = new KbListener();
 
         this.player1Controls = new PlayerControls(KeyEvent.VK_W, KeyEvent.VK_S);
-        this.player1 = new Player(GlobalConstants.PLAYER_WIDTH + 20, 100, Color.BLUE,
+        this.player1 = new Player(GlobalConstants.PLAYER_WIDTH + 20, playerInitPosY, Color.BLUE,
                 new PlayerController(keyListener, player1Controls));
 
         this.player2Controls = new PlayerControls();
-        this.player2 = new Player(GlobalConstants.WINDOW_WIDTH - GlobalConstants.PLAYER_WIDTH - 20, 100, Color.RED,
+        this.player2 = new Player(GlobalConstants.WINDOW_WIDTH - GlobalConstants.PLAYER_WIDTH - 20, playerInitPosY,
+                Color.RED,
                 new PlayerController(keyListener, player2Controls));
 
-        this.ball = new Ball((GlobalConstants.WINDOW_WIDTH / 2) + (GlobalConstants.BALL_WIDTH / 2),
-                (GlobalConstants.WINDOW_HEIGHT / 2) + (GlobalConstants.BALL_HEIGHT / 2), player1, player2);
+        double scoreXOffset = 150;
+        this.player1ScoreText = new Text(String.valueOf(GameState.player1Score), scoreXOffset, 100);
+        this.player2ScoreText = new Text(String.valueOf(GameState.player2Score),
+                GlobalConstants.WINDOW_WIDTH - scoreXOffset, 100);
+
+        this.ball = new Ball(screenCenterX - (GlobalConstants.BALL_WIDTH / 2),
+                screenCenterY - (GlobalConstants.BALL_HEIGHT / 2), player1, player2, player1ScoreText,
+                player2ScoreText);
+
+        this.gameOverText = new MultiLineText(
+                String.format("GAME OVER\nPlayer %s wins", GameState.winner == PLAYER_ENUM.ONE ? "1" : "2"),
+                screenCenterX, screenCenterY).center(g2);
 
         this.addKeyListener(keyListener);
     }
@@ -59,9 +81,11 @@ public class GameWindow extends JFrame implements Runnable {
         this.draw(dbg);
         g2.drawImage(dbImage, 0, 0, this);
 
-        player1.update(deltaTime);
-        player2.update(deltaTime);
-        ball.update(deltaTime);
+        if (!GameState.gameOver) {
+            player1.update(deltaTime);
+            player2.update(deltaTime);
+            ball.update(deltaTime);
+        }
 
     }
 
@@ -75,17 +99,27 @@ public class GameWindow extends JFrame implements Runnable {
         player2.draw(g2);
 
         ball.draw(g2);
+
+        player1ScoreText.draw(g2);
+        player2ScoreText.draw(g2);
+
+        if (GameState.gameOver) {
+
+            gameOverText.draw(g2);
+        }
     }
 
     public void run() {
         //
         double prevTime = 0.0;
-        while (true) {
+
+        while (GameState.isRunning) {
             double time = Time.getTime();
             double deltaTime = time - prevTime;
             prevTime = time;
 
             update(deltaTime);
         }
+        update(Time.getTime() - prevTime);
     }
 }
