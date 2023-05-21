@@ -27,5 +27,5 @@ public class GlobalConstants {
     // smoothen point scoring
     public static final double GOAL_PADDING = 25;
 
-    public static int SCORE_TO_WIN = 1;
+    public static int SCORE_TO_WIN = 5;
 }
