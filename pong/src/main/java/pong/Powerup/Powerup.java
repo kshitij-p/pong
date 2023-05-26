@@ -10,9 +10,16 @@ public class Powerup implements Drawable {
     protected Drawable sprite;
     protected PowerupManager powerupManager;
 
+    public static final int SPEEDUP = 0;
+    public static final int FIREBALL = 1;
+
     Powerup(Drawable sprite, PowerupManager powerupManager) {
         this.sprite = sprite;
         this.powerupManager = powerupManager;
+    }
+
+    public int getType() {
+        return -1;
     }
 
     public Drawable getSprite() {

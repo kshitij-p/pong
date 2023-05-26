@@ -34,6 +34,24 @@ public class PowerupManager {
 
     }
 
+    // Spawns a powerup - SHLD ONLY BE USED FOR TESTING
+    private void spawnPowerupForTest(int type, double x, double y) {
+
+        System.out.println("SPAWNED A POWER UP FOR TESTING PURPOSES - DO NOT USE THIS DIRECTLY");
+
+        Powerup powerup = null;
+
+        if (type == Powerup.SPEEDUP) {
+            powerup = new Speedup(x, y, this);
+        } else {
+            powerup = new Fireball(x, y, this);
+
+        }
+
+        pickablePowerups
+                .add(powerup);
+    }
+
     public void reset() {
         dequeuePowerupCreation();
         removePowerupForAll();
@@ -108,11 +126,22 @@ public class PowerupManager {
 
     }
 
+    public Powerup getRandomPowerup(double x, double y) {
+        int type = ThreadLocalRandom.current().nextInt(0, 2);
+
+        if (type == Powerup.SPEEDUP) {
+            return new Speedup(x, y, this);
+        } else {
+            return new Fireball(x, y, this);
+        }
+    }
+
     public PowerupManager spawnPowerup() {
         if (spawnPowerupFuture != null) {
             spawnPowerupFuture.cancel(true);
             spawnPowerupFuture = null;
         }
+
         if (!canSpawn())
             return this;
 
@@ -146,7 +175,7 @@ public class PowerupManager {
         }
 
         pickablePowerups
-                .add(new Speedup(powerupX, powerupY, this));
+                .add(getRandomPowerup(powerupX, powerupY));
 
         return this;
     }

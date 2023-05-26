@@ -35,6 +35,6 @@ public class GlobalConstants {
     public static final double POWER_UP_WIDTH = 48;
     public static final double POWER_UP_HEIGHT = 48;
 
-    public static final int POWER_UP_DURATION_SECS = 3;
+    public static final int POWER_UP_DURATION_SECS = 10;
     public static final int POWER_UP_SPAWN_INTERVAL_SECS = 5;
 }

@@ -8,6 +8,8 @@ import pong.GameState;
 import pong.GlobalConstants;
 import pong.Text;
 import pong.Player.Player;
+import pong.Powerup.Fireball;
+import pong.Powerup.Powerup;
 import pong.Powerup.PowerupManager;
 import pong.util.Coord;
 import pong.util.Drawable;
@@ -180,8 +182,17 @@ public class Ball implements Drawable {
 
         powerupManager.getCollision(this);
 
-        x += velX * deltaTime;
-        y += velY * deltaTime;
+        double finalVelX = velX;
+        double finalVelY = velY;
+
+        if (velX < 0 && player2.powerup != null && player2.powerup.getType() == Powerup.FIREBALL) {
+            finalVelX *= Fireball.getMultiplier();
+        } else if (velX > 0 && player1.powerup != null && player1.powerup.getType() == Powerup.FIREBALL) {
+            finalVelX *= Fireball.getMultiplier();
+        }
+
+        x += finalVelX * deltaTime;
+        y += finalVelY * deltaTime;
     }
 
     public double getX() {

@@ -11,6 +11,9 @@ public class GameState {
     public static int player1Score = 0;
     public static int player2Score = 0;
 
+    public static double player1SpeedMult = 1;
+    public static double player2SpeedMult = 1;
+
     public static void reset() {
         isRunning = true;
         gameOver = false;
