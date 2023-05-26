@@ -39,14 +39,7 @@ public class PowerupManager {
 
         System.out.println("SPAWNED A POWER UP FOR TESTING PURPOSES - DO NOT USE THIS DIRECTLY");
 
-        Powerup powerup = null;
-
-        if (type == Powerup.SPEEDUP) {
-            powerup = new Speedup(x, y, this);
-        } else {
-            powerup = new Fireball(x, y, this);
-
-        }
+        Powerup powerup = Powerup.getPowerupFromType(type, x, y, this);
 
         pickablePowerups
                 .add(powerup);
@@ -127,13 +120,10 @@ public class PowerupManager {
     }
 
     public Powerup getRandomPowerup(double x, double y) {
-        int type = ThreadLocalRandom.current().nextInt(0, 2);
+        int type = ThreadLocalRandom.current().nextInt(Powerup.FIRST_POWERUP_TYPE, Powerup.LAST_POWERUP_TYPE + 1);
 
-        if (type == Powerup.SPEEDUP) {
-            return new Speedup(x, y, this);
-        } else {
-            return new Fireball(x, y, this);
-        }
+        return Powerup.getPowerupFromType(type, x, y, this);
+
     }
 
     public PowerupManager spawnPowerup() {

@@ -10,8 +10,13 @@ public class Powerup implements Drawable {
     protected Drawable sprite;
     protected PowerupManager powerupManager;
 
+    public static final int FIRST_POWERUP_TYPE = 0;
+
     public static final int SPEEDUP = 0;
     public static final int FIREBALL = 1;
+    public static final int BUNGEE_GUM = 2;
+
+    public static final int LAST_POWERUP_TYPE = 2;
 
     Powerup(Drawable sprite, PowerupManager powerupManager) {
         this.sprite = sprite;
@@ -20,6 +25,22 @@ public class Powerup implements Drawable {
 
     public int getType() {
         return -1;
+    }
+
+    public static Powerup getPowerupFromType(int type, double x, double y, PowerupManager powerupManager) {
+        switch (type) {
+
+            case Powerup.SPEEDUP:
+                return new Speedup(x, y, powerupManager);
+            case Powerup.FIREBALL:
+                return new Fireball(x, y, powerupManager);
+
+            case Powerup.BUNGEE_GUM:
+                return new BungeeGum(x, y, powerupManager);
+
+            default:
+                throw new Error("Invalid powerup type");
+        }
     }
 
     public Drawable getSprite() {

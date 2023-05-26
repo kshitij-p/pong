@@ -19,7 +19,7 @@ public class Speedup extends Powerup {
 
     @Override
     public void applyPowerup(PlayerController playerController) {
-        playerController.setSpeedMult(2);
+        playerController.setSpeedMult(2.15);
     }
 
     @Override

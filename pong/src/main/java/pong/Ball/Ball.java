@@ -8,6 +8,7 @@ import pong.GameState;
 import pong.GlobalConstants;
 import pong.Text;
 import pong.Player.Player;
+import pong.Powerup.BungeeGum;
 import pong.Powerup.Fireball;
 import pong.Powerup.Powerup;
 import pong.Powerup.PowerupManager;
@@ -55,7 +56,7 @@ public class Ball implements Drawable {
         this.powerupManager = powerupManager;
     }
 
-    public Coord getVelAfterBounce(Player player) {
+    public Coord getVelAfterBounce(Player player, double maxAngle) {
         // Calculates how much to shift the ball by based on how close to the center it
         // hits.
 
@@ -66,7 +67,7 @@ public class Ball implements Drawable {
         // it on -1 to 1 scale we divide by player.height / 2)
         double normalisedDiff = (playerCenter - ballCenter) / (player.getHeight() /
                 2.0);
-        double thetaAngle = Math.toRadians(normalisedDiff * GlobalConstants.BALL_MAX_ANGLE);
+        double thetaAngle = Math.toRadians(normalisedDiff * maxAngle);
 
         // Modifier between 0.75 to 1 based on whether ball hits the edge or not. If
         // ball hits center, 0.75 and if edge, 1.0
@@ -120,7 +121,7 @@ public class Ball implements Drawable {
     public void update(double deltaTime) {
 
         // Check which side the ball is going to: velX < 0 means its goin to Player1
-        // i.e. left side
+        // i.e. left side and is HIT by player 2
         if (velX < 0) {
             double playerLeftOffset = player1.getX();
             double playerRightOffset = playerLeftOffset + player1.getWidth();
@@ -133,7 +134,13 @@ public class Ball implements Drawable {
             if (x >= playerLeftOffset && x <= playerRightOffset && ballBot >= playerTopOffset
                     && y <= playerBotOffset) {
 
-                Coord newVels = getVelAfterBounce(player1);
+                double maxAngle = GlobalConstants.BALL_MAX_ANGLE;
+
+                if (player1.powerup != null && player1.powerup.getType() == Powerup.BUNGEE_GUM) {
+                    maxAngle = BungeeGum.getMaxAngle();
+                }
+
+                Coord newVels = getVelAfterBounce(player1, maxAngle);
 
                 velX = newVels.x;
                 velY = newVels.y;
@@ -157,7 +164,14 @@ public class Ball implements Drawable {
             // Check if ball collides with player2 i.e. right side
             if (ballRight >= playerLeftOffset && ballRight <= playerRightOffset && ballBot >= playerTopOffset
                     && y <= playerBotOffset) {
-                Coord newVels = getVelAfterBounce(player2);
+
+                double maxAngle = GlobalConstants.BALL_MAX_ANGLE;
+
+                if (player2.powerup != null && player2.powerup.getType() == Powerup.BUNGEE_GUM) {
+                    maxAngle = BungeeGum.getMaxAngle();
+                }
+
+                Coord newVels = getVelAfterBounce(player2, maxAngle);
                 velX = newVels.x;
                 velY = newVels.y;
 
@@ -185,10 +199,21 @@ public class Ball implements Drawable {
         double finalVelX = velX;
         double finalVelY = velY;
 
-        if (velX < 0 && player2.powerup != null && player2.powerup.getType() == Powerup.FIREBALL) {
-            finalVelX *= Fireball.getMultiplier();
-        } else if (velX > 0 && player1.powerup != null && player1.powerup.getType() == Powerup.FIREBALL) {
-            finalVelX *= Fireball.getMultiplier();
+        if (velX < 0 && player2.powerup != null) {
+            if (player2.powerup.getType() == Powerup.FIREBALL) {
+
+                finalVelX *= Fireball.getMultiplier();
+            } else if (player2.powerup.getType() == Powerup.BUNGEE_GUM) {
+                finalVelX *= BungeeGum.getSpeedMult();
+            }
+
+        } else if (velX > 0 && player1.powerup != null) {
+            if (player1.powerup.getType() == Powerup.FIREBALL) {
+
+                finalVelX *= Fireball.getMultiplier();
+            } else if (player1.powerup.getType() == Powerup.BUNGEE_GUM) {
+                finalVelX *= BungeeGum.getSpeedMult();
+            }
         }
 
         x += finalVelX * deltaTime;
