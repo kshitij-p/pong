@@ -1,12 +1,15 @@
 package pong.Powerup;
 
-import pong.Text;
+import pong.GlobalConstants;
+import pong.Image;
 import pong.Player.PlayerController;
 
 public class Speedup extends Powerup {
 
     public Speedup(double x, double y, PowerupManager powerupManager) {
-        super(new Text("SPEED", x, y), powerupManager);
+        super(new Image("sprites/powerups/speedup.png", x, y, GlobalConstants.POWER_UP_WIDTH,
+                GlobalConstants.POWER_UP_HEIGHT), powerupManager);
+
     }
 
     @Override

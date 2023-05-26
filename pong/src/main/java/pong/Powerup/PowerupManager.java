@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 import pong.GlobalConstants;
 import pong.Ball.Ball;
 import pong.Player.Player;
 import pong.util.PLAYER_ENUM;
+import pong.util.util;
 
 public class PowerupManager {
 
@@ -21,6 +23,7 @@ public class PowerupManager {
     private ScheduledExecutorService executorService;
     private ScheduledFuture<?> player1PowerupFuture;
     private ScheduledFuture<?> player2PowerupFuture;
+    private ScheduledFuture<?> spawnPowerupFuture;
 
     public PowerupManager(Player player1, Player player2) {
         this.pickablePowerups = new ArrayList<>(2);
@@ -28,12 +31,42 @@ public class PowerupManager {
         this.player2 = player2;
 
         this.executorService = Executors.newScheduledThreadPool(1);
+
+    }
+
+    public void reset() {
+        dequeuePowerupCreation();
+        removePowerupForAll();
+        while (this.pickablePowerups.size() > 0) {
+            this.pickablePowerups.remove(pickablePowerups.size() - 1);
+        }
+    }
+
+    public boolean canSpawn() {
+        return (player1.powerup == null || player2.powerup == null)
+                && pickablePowerups.size() < GlobalConstants.MAX_PICKABLE_POWER_UPS;
     }
 
     public void drawPowerups(Graphics2D g2) {
         for (Powerup powerup : pickablePowerups) {
             powerup.draw(g2);
         }
+    }
+
+    public PowerupManager queuePowerupCreation() {
+        if (!canSpawn() || spawnPowerupFuture != null)
+            return this;
+        spawnPowerupFuture = executorService.schedule(() -> spawnPowerup(),
+                GlobalConstants.POWER_UP_SPAWN_INTERVAL_SECS, TimeUnit.SECONDS);
+        return this;
+    }
+
+    public PowerupManager dequeuePowerupCreation() {
+        if (spawnPowerupFuture != null) {
+            spawnPowerupFuture.cancel(true);
+            spawnPowerupFuture = null;
+        }
+        return this;
     }
 
     public void getCollision(Ball ball) {
@@ -76,14 +109,44 @@ public class PowerupManager {
     }
 
     public PowerupManager spawnPowerup() {
-        // To do make it spawn power ups only if 1 player can receive them and spawn it
-        // towards the player who doesnt have it
-        if (pickablePowerups.size() >= GlobalConstants.MAX_PICKABLE_POWER_UPS) {
+        if (spawnPowerupFuture != null) {
+            spawnPowerupFuture.cancel(true);
+            spawnPowerupFuture = null;
+        }
+        if (!canSpawn())
             return this;
+
+        double powerupY = ThreadLocalRandom.current().nextDouble(GlobalConstants.POWER_UP_HEIGHT + util.getScreenTop(),
+                util.getScreenBottom() - GlobalConstants.POWER_UP_HEIGHT);
+        double powerupX = 0;
+
+        double playerOffsetPadding = 10;
+
+        double powerupXSpawnStart = GlobalConstants.POWER_UP_WIDTH + util.getScreenLeft()
+                + GlobalConstants.PLAYER_POS_OFFSET + playerOffsetPadding;
+        double powerupXSpawnEnd = (util.getScreenRight() - GlobalConstants.POWER_UP_WIDTH)
+                - (GlobalConstants.PLAYER_POS_OFFSET + playerOffsetPadding);
+
+        // If both dont have power up, spawn randomly anywhere
+        if (player1.powerup == null && player2.powerup == null) {
+
+            powerupX = ThreadLocalRandom.current().nextDouble(
+                    powerupXSpawnStart,
+                    powerupXSpawnEnd);
+
+        } else if (player1.powerup == null) {
+            // If player 1 doesnt have power up, spawn biased towards player1
+
+            powerupX = ThreadLocalRandom.current().nextDouble(powerupXSpawnStart, GlobalConstants.WINDOW_WIDTH / 2);
+
+        } else {
+            // If player 2 doesnt have power up, spawn biased towards player1
+            powerupX = ThreadLocalRandom.current().nextDouble(powerupXSpawnStart,
+                    powerupXSpawnEnd);
         }
 
-        pickablePowerups.add(new Speedup(300, 180, this));
-        pickablePowerups.add(new Speedup(400, 120, this));
+        pickablePowerups
+                .add(new Speedup(powerupX, powerupY, this));
 
         return this;
     }
@@ -103,7 +166,7 @@ public class PowerupManager {
             player1PowerupFuture = executorService.schedule(() -> {
 
                 removePowerUpFor(playerToAssign);
-            }, 3, TimeUnit.SECONDS);
+            }, GlobalConstants.POWER_UP_DURATION_SECS, TimeUnit.SECONDS);
 
         } else if (playerToAssign == PLAYER_ENUM.TWO && player2.powerup == null) {
             player2.powerup = powerup;
@@ -112,7 +175,7 @@ public class PowerupManager {
             player2PowerupFuture = executorService.schedule(() -> {
 
                 removePowerUpFor(playerToAssign);
-            }, 10, TimeUnit.SECONDS);
+            }, GlobalConstants.POWER_UP_DURATION_SECS, TimeUnit.SECONDS);
         }
 
         return this;

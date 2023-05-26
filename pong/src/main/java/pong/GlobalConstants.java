@@ -14,6 +14,7 @@ public class GlobalConstants {
     public static final double PLAYER_WIDTH = 20;
     public static final double PLAYER_HEIGHT = 80;
     public static final double PLAYER_SPEED = 175;
+    public static final double PLAYER_POS_OFFSET = 20;
 
     public static final double BALL_INIT_VELX = -250;
     public static final double BALL_INIT_VELY = 10;
@@ -30,4 +31,10 @@ public class GlobalConstants {
     public static int SCORE_TO_WIN = 5;
 
     public static int MAX_PICKABLE_POWER_UPS = 2;
+
+    public static final double POWER_UP_WIDTH = 48;
+    public static final double POWER_UP_HEIGHT = 48;
+
+    public static final int POWER_UP_DURATION_SECS = 3;
+    public static final int POWER_UP_SPAWN_INTERVAL_SECS = 5;
 }

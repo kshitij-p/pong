@@ -51,8 +51,6 @@ public class Ball implements Drawable {
         this.player1Score = player1Score;
         this.player2Score = player2Score;
         this.powerupManager = powerupManager;
-
-        this.powerupManager.spawnPowerup();
     }
 
     public Coord getVelAfterBounce(Player player) {
@@ -104,7 +102,7 @@ public class Ball implements Drawable {
             GameState.player2Score++;
             player2Score.text = String.valueOf(GameState.player2Score);
         }
-        powerupManager.removePowerupForAll();
+        powerupManager.reset();
         player1.reset();
         player2.reset();
         reset();

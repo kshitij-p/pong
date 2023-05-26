@@ -13,7 +13,14 @@ public class Powerup implements Drawable {
     Powerup(Drawable sprite, PowerupManager powerupManager) {
         this.sprite = sprite;
         this.powerupManager = powerupManager;
+    }
 
+    public Drawable getSprite() {
+        return sprite;
+    }
+
+    public void setSprite(Drawable sprite) {
+        this.sprite = sprite;
     }
 
     public double getX() {

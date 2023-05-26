@@ -11,4 +11,12 @@ public class util {
         // Linux title bar is bugged so +10 needs to be added
         return GlobalConstants.INSETS.top + 10;
     }
+
+    public static double getScreenLeft() {
+        return GlobalConstants.INSETS.left;
+    }
+
+    public static double getScreenRight() {
+        return GlobalConstants.WINDOW_WIDTH - GlobalConstants.INSETS.right;
+    }
 }

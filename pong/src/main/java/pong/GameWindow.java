@@ -53,12 +53,15 @@ public class GameWindow extends JFrame implements Runnable {
         this.keyListener = new KbListener();
 
         this.player1Controls = new PlayerControls(KeyEvent.VK_W, KeyEvent.VK_S);
-        this.player1 = new Player(GlobalConstants.PLAYER_WIDTH + 20, playerInitPosY, Color.BLUE,
+        this.player1 = new Player(GlobalConstants.PLAYER_WIDTH + GlobalConstants.PLAYER_POS_OFFSET, playerInitPosY,
+                Color.BLUE,
                 PLAYER_ENUM.ONE,
                 new PlayerController(keyListener, player1Controls));
 
         this.player2Controls = new PlayerControls();
-        this.player2 = new Player(GlobalConstants.WINDOW_WIDTH - GlobalConstants.PLAYER_WIDTH - 20, playerInitPosY,
+        this.player2 = new Player(
+                GlobalConstants.WINDOW_WIDTH - GlobalConstants.PLAYER_WIDTH - GlobalConstants.PLAYER_POS_OFFSET,
+                playerInitPosY,
                 Color.RED,
                 PLAYER_ENUM.TWO,
                 new PlayerController(keyListener, player2Controls));
@@ -92,6 +95,7 @@ public class GameWindow extends JFrame implements Runnable {
             player1.update(deltaTime);
             player2.update(deltaTime);
             ball.update(deltaTime);
+            powerupManager.queuePowerupCreation();
         }
 
     }
