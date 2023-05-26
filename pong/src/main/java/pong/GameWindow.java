@@ -12,6 +12,7 @@ import pong.Ball.Ball;
 import pong.Player.Player;
 import pong.Player.PlayerController;
 import pong.Player.PlayerControls;
+import pong.Powerup.PowerupManager;
 import pong.util.PLAYER_ENUM;
 
 public class GameWindow extends JFrame implements Runnable {
@@ -27,6 +28,8 @@ public class GameWindow extends JFrame implements Runnable {
 
     Text player1ScoreText;
     Text player2ScoreText;
+
+    PowerupManager powerupManager;
 
     MultiLineText gameOverText;
 
@@ -51,11 +54,13 @@ public class GameWindow extends JFrame implements Runnable {
 
         this.player1Controls = new PlayerControls(KeyEvent.VK_W, KeyEvent.VK_S);
         this.player1 = new Player(GlobalConstants.PLAYER_WIDTH + 20, playerInitPosY, Color.BLUE,
+                PLAYER_ENUM.ONE,
                 new PlayerController(keyListener, player1Controls));
 
         this.player2Controls = new PlayerControls();
         this.player2 = new Player(GlobalConstants.WINDOW_WIDTH - GlobalConstants.PLAYER_WIDTH - 20, playerInitPosY,
                 Color.RED,
+                PLAYER_ENUM.TWO,
                 new PlayerController(keyListener, player2Controls));
 
         double scoreXOffset = 150;
@@ -63,9 +68,11 @@ public class GameWindow extends JFrame implements Runnable {
         this.player2ScoreText = new Text(String.valueOf(GameState.player2Score),
                 GlobalConstants.WINDOW_WIDTH - scoreXOffset, 100);
 
+        this.powerupManager = new PowerupManager(player1, player2);
+
         this.ball = new Ball(screenCenterX - (GlobalConstants.BALL_WIDTH / 2),
                 screenCenterY - (GlobalConstants.BALL_HEIGHT / 2), player1, player2, player1ScoreText,
-                player2ScoreText);
+                player2ScoreText, powerupManager);
 
         this.gameOverText = new MultiLineText(
                 String.format("GAME OVER\nPlayer %s wins", GameState.winner == PLAYER_ENUM.ONE ? "1" : "2"),
@@ -94,6 +101,8 @@ public class GameWindow extends JFrame implements Runnable {
 
         g2.setColor(Color.BLACK);
         g2.fillRect(0, 0, GlobalConstants.WINDOW_WIDTH, GlobalConstants.WINDOW_HEIGHT);
+
+        powerupManager.drawPowerups(g2);
 
         player1.draw(g2);
         player2.draw(g2);

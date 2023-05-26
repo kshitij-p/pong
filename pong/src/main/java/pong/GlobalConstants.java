@@ -28,4 +28,6 @@ public class GlobalConstants {
     public static final double GOAL_PADDING = 25;
 
     public static int SCORE_TO_WIN = 5;
+
+    public static int MAX_PICKABLE_POWER_UPS = 2;
 }

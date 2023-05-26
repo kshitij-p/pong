@@ -5,24 +5,31 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
 import pong.GlobalConstants;
+import pong.Powerup.Powerup;
+import pong.util.Drawable;
+import pong.util.PLAYER_ENUM;
 
-public class Player {
+public class Player implements Drawable {
 
     private double x, y;
     private double width = GlobalConstants.PLAYER_WIDTH;
     private double height = GlobalConstants.PLAYER_HEIGHT;
     private Color color;
     private PlayerController controller;
+    private PLAYER_ENUM player_ENUM;
+    public Powerup powerup = null;
 
     private double initX; // Used to reset pos
     private double initY; // Used to reset pos
 
-    public Player(double x, double y, Color color, PlayerController controller) {
+    public Player(double x, double y, Color color, PLAYER_ENUM player_ENUM, PlayerController controller) {
         this.x = x;
         this.y = y;
         this.color = color;
+        this.player_ENUM = player_ENUM;
+
         this.controller = controller;
-        this.controller.setPlayer(this);
+        this.controller.setPlayer(this).setPlayer_ENUM(player_ENUM);
 
         this.initX = x;
         this.initY = y;
@@ -94,4 +101,9 @@ public class Player {
         g2.setColor(color);
         g2.fill(new Rectangle2D.Double(x, y, width, height));
     }
+
+    public PLAYER_ENUM getPlayer_ENUM() {
+        return player_ENUM;
+    }
+
 }

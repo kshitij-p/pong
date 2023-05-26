@@ -8,11 +8,13 @@ import pong.GameState;
 import pong.GlobalConstants;
 import pong.Text;
 import pong.Player.Player;
+import pong.Powerup.PowerupManager;
 import pong.util.Coord;
+import pong.util.Drawable;
 import pong.util.PLAYER_ENUM;
 import pong.util.util;
 
-public class Ball {
+public class Ball implements Drawable {
 
     private double x;
     private double y;
@@ -30,10 +32,13 @@ public class Ball {
     private Text player1Score;
     private Text player2Score;
 
+    PowerupManager powerupManager;
+
     Player player1;
     Player player2;
 
-    public Ball(double x, double y, Player player1, Player player2, Text player1Score, Text player2Score) {
+    public Ball(double x, double y, Player player1, Player player2, Text player1Score, Text player2Score,
+            PowerupManager powerupManager) {
         this.x = x;
         this.y = y;
         this.initX = x;
@@ -45,6 +50,9 @@ public class Ball {
 
         this.player1Score = player1Score;
         this.player2Score = player2Score;
+        this.powerupManager = powerupManager;
+
+        this.powerupManager.spawnPowerup();
     }
 
     public Coord getVelAfterBounce(Player player) {
@@ -96,6 +104,7 @@ public class Ball {
             GameState.player2Score++;
             player2Score.text = String.valueOf(GameState.player2Score);
         }
+        powerupManager.removePowerupForAll();
         player1.reset();
         player2.reset();
         reset();
@@ -171,8 +180,46 @@ public class Ball {
             }
         }
 
+        powerupManager.getCollision(this);
+
         x += velX * deltaTime;
         y += velY * deltaTime;
+    }
+
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public PLAYER_ENUM hitBy() {
+        if (velX < 0)
+            return PLAYER_ENUM.TWO;
+        return PLAYER_ENUM.ONE;
+    }
+
+    public PLAYER_ENUM goingTowardsPlayer() {
+        if (velX < 0)
+            return PLAYER_ENUM.ONE;
+        return PLAYER_ENUM.TWO;
     }
 
 }

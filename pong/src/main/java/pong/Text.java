@@ -5,18 +5,25 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 
-public class Text {
+import pong.util.Drawable;
+
+public class Text implements Drawable {
     public Font font = new Font("Times New Roman", Font.PLAIN, 24);
     public double x, y;
     public String text;
     public Color color = Color.WHITE;
 
+    private double width;
+    private double height;
+
     public Text(String text) {
         this.text = text;
+        this.width = font.getSize() * text.length();
+        this.height = font.getSize();
     }
 
     public Text(String text, double x, double y) {
-        this.text = text;
+        this(text);
         this.x = x;
         this.y = y;
     }
@@ -47,4 +54,29 @@ public class Text {
         g2.setFont(font);
         g2.drawString(text, (float) x, (float) y);
     }
+
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
 }
